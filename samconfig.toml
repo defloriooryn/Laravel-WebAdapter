@@ -1,0 +1,12 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "sam-Laravel-WebAdapter"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-b3vqvjtcflsz"
+s3_prefix = "sam-Laravel-WebAdapter"
+region = "ap-southeast-1"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = ["LaravelFunc=838928449797.dkr.ecr.ap-southeast-1.amazonaws.com/samlaravelwebadapter85b8cf2b/laravelfuncfcd7810frepo"]

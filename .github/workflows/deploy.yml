@@ -1,0 +1,45 @@
+name: Deploy Laravel on Lambda
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Install AWS CLI
+      run: |
+        sudo apt update && sudo apt install curl zip unzip -y
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip -qq awscliv2.zip
+        sudo ./aws/install --update
+
+    - name: Setup AWS SAM
+      uses: aws-actions/setup-sam@v2
+
+    - name: Build & Deploy
+      run: |
+       sam build
+       sam deploy \
+        --stack-name sam-Laravel-WebAdapter \
+        --image-repositories LaravelFunc=838928449797.dkr.ecr.ap-southeast-1.amazonaws.com/samlaravelwebadapter85b8cf2b/laravelfuncfcd7810frepo \
+        --no-confirm-changeset \
+        --no-fail-on-empty-changeset \
+        --capabilities CAPABILITY_IAM

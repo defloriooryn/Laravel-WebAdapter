@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    Deploying laravel app to lambda container using SAM
+
+Globals:
+    Function:
+        Timeout: 180
+
+Resources:
+    LaravelFunc:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: ./
+            MemorySize: 512
+            PackageType: Image
+            Architectures:
+                - x86_64
+            Events:
+                Root:
+                    Type: HttpApi
+                    Properties:
+                        Path: /
+                        Method: ANY
+                Proxy:
+                    Type: HttpApi
+                    Properties:
+                        Path: /{proxy+}
+                        Method: ANY
+        Metadata:
+            DockerTag: v1.0.0
+            DockerContext: ./
+            Dockerfile: Dockerfile
+
+Outputs:
+    NginxApi:
+        Description: "API Gateway endpoint URL for Laravel application"
+        Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
